@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+  <form name="todo">
+    <input name="todoInput" id="todo-input" aria-label="todo-input" autocomplete="off" placeholder="What needs to be done" />
+  </form>
+</body>
+
+<script>
+  const todos = [];
+
+  function formAccept(e) {
+    e.preventDefault();
+    todos.push(e.target.elements.todoInput.value);
+    console.log(e.target.elements.todoInput.value);
+  };
+
+  let form = document.forms.todo;
+  form.addEventListener('submit', formAccept);
+  console.log(form.elements.todoInput.value);
+</script>
+
+</html>
