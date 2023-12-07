@@ -9,22 +9,29 @@
 
 <body>
   <form name="todo">
-    <input name="todoInput" id="todo-input" aria-label="todo-input" autocomplete="off" placeholder="What needs to be done" />
+    <input name="todoInput" id="todo-input" aria-label="todo-input" autocomplete="off"
+      placeholder="What needs to be done" />
+
+    <ul name="todoList" id="todo-list"></ul>
   </form>
 </body>
 
 <script>
   const todos = [];
+  let form = document.forms.todo;
+  let todosList = document.getElementById('todo-list')
 
   function formAccept(e) {
     e.preventDefault();
-    todos.push(e.target.elements.todoInput.value);
-    console.log(e.target.elements.todoInput.value);
+    const input = e.target.elements.todoInput
+    todos.push(input.value);
+    const newLi = document.createElement('li');
+    newLi.innerHTML = input.value;
+    todosList.appendChild(newLi);
+    input.value = '';
   };
 
-  let form = document.forms.todo;
   form.addEventListener('submit', formAccept);
-  console.log(form.elements.todoInput.value);
 </script>
 
 </html>
