@@ -13,21 +13,68 @@
       placeholder="What needs to be done" />
 
     <ul name="todoList" id="todo-list"></ul>
+    <div id="filters">
+      <button id='all' type="button">Все</button>
+      <button id="comp" type="button">Выполненные</button>
+      <button id="uncomp" type="button">Невыполненные</button>
+    </div>
   </form>
 </body>
 
 <script>
   const todos = [];
   let form = document.forms.todo;
-  let todosList = document.getElementById('todo-list')
+  let todosList = document.getElementById('todo-list');
+  const all = document.getElementById('all');
+  const comp = document.getElementById('comp');
+  const uncomp = document.getElementById('uncomp');
+
+  function filterClickHandler(e) {
+    switch (e.target.id) {
+      case 'uncomp':
+        return;
+      case 'comp':
+        return;
+      default:
+        todosList.textContent = '';
+        console.log(todosList.children);
+        return;
+    }
+  };
+
+  all.onclick = filterClickHandler;
+
+  function setChecked(e) {
+    const currentId = +e.target.id.slice(1);
+    todos[currentId].checked = e.target.checked;
+  };
+
+  function createNewLi(payload) {
+    const checkbox = document.createElement('input');
+    const nodeNum = todosList.childElementCount;
+    checkbox.type = 'checkbox';
+    checkbox.id = `c${nodeNum}`
+    checkbox.onchange = setChecked;
+    const text = document.createElement('span');
+    text.innerHTML = payload;
+    const newLi = document.createElement('li');
+    newLi.appendChild(checkbox);
+    newLi.appendChild(text);
+    newLi.id = `todo-item-${nodeNum}`;
+
+    return newLi;
+  };
 
   function formAccept(e) {
     e.preventDefault();
+
     const input = e.target.elements.todoInput
-    todos.push(input.value);
-    const newLi = document.createElement('li');
-    newLi.innerHTML = input.value;
-    todosList.appendChild(newLi);
+
+    if (input.value.length === 0) return;
+
+    todos.push({ value: input.value, checked: false });
+    const li = createNewLi(input.value);
+    todosList.appendChild(li);
     input.value = '';
   };
 
