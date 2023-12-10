@@ -17,6 +17,7 @@
       <button id='all' type="button">Все</button>
       <button id="comp" type="button">Выполненные</button>
       <button id="uncomp" type="button">Невыполненные</button>
+      <span id="counter"></span>
     </div>
   </form>
 </body>
@@ -28,41 +29,69 @@
   const all = document.getElementById('all');
   const comp = document.getElementById('comp');
   const uncomp = document.getElementById('uncomp');
+  let filters = document.getElementById('filters');
+
+
+  function setTodosCount(count) {
+    document.getElementById('counter').innerText = `${count} items left`;
+  }
+
+  function clearTodos() {
+    todosList.textContent = '';
+    setTodosCount(0)
+  }
+
+  function createNewLi(payload, number) {
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.id = `c${number}`;
+    checkbox.checked = todos[number].checked;
+    checkbox.onchange = setChecked;
+    const text = document.createElement('span');
+    text.innerText = payload;
+    const newLi = document.createElement('li');
+    newLi.appendChild(checkbox);
+    newLi.appendChild(text);
+    newLi.id = `todo-item-${number}`;
+
+    todosList.appendChild(newLi);
+    setTodosCount(todosList.childElementCount);
+  };
 
   function filterClickHandler(e) {
     switch (e.target.id) {
       case 'uncomp':
+        clearTodos();
+        todos.forEach((item, index) => {
+          if (!item.checked) {
+            createNewLi(item.value, index);
+          };
+        });
         return;
       case 'comp':
+        clearTodos();
+        todos.forEach((item, index) => {
+          if (item.checked) {
+            createNewLi(item.value, index);
+          };
+        });
         return;
       default:
-        todosList.textContent = '';
-        console.log(todosList.children);
+        clearTodos();
+        todos.forEach((item, index) => {
+          createNewLi(item.value, index)
+        });
         return;
     }
   };
 
   all.onclick = filterClickHandler;
+  comp.onclick = filterClickHandler;
+  uncomp.onclick = filterClickHandler;
 
   function setChecked(e) {
     const currentId = +e.target.id.slice(1);
     todos[currentId].checked = e.target.checked;
-  };
-
-  function createNewLi(payload) {
-    const checkbox = document.createElement('input');
-    const nodeNum = todosList.childElementCount;
-    checkbox.type = 'checkbox';
-    checkbox.id = `c${nodeNum}`
-    checkbox.onchange = setChecked;
-    const text = document.createElement('span');
-    text.innerHTML = payload;
-    const newLi = document.createElement('li');
-    newLi.appendChild(checkbox);
-    newLi.appendChild(text);
-    newLi.id = `todo-item-${nodeNum}`;
-
-    return newLi;
   };
 
   function formAccept(e) {
@@ -73,8 +102,9 @@
     if (input.value.length === 0) return;
 
     todos.push({ value: input.value, checked: false });
-    const li = createNewLi(input.value);
-    todosList.appendChild(li);
+    const nodeNum = todosList.childElementCount;
+    createNewLi(input.value, nodeNum);
+    
     input.value = '';
   };
 
