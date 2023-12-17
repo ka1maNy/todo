@@ -9,9 +9,11 @@
 
 <body>
   <form name="todo">
-    <input name="todoInput" id="todo-input" aria-label="todo-input" autocomplete="off"
-      placeholder="What needs to be done" />
-
+    <div name="inputContainer" id="input-container">
+      <input type="checkbox" id="allcheck" />
+      <input name="todoInput" id="todo-input" aria-label="todo-input" autocomplete="off"
+        placeholder="What needs to be done" />
+    </div>
     <ul name="todoList" id="todo-list"></ul>
     <div id="filters">
       <button id='all' type="button">Все</button>
@@ -24,13 +26,25 @@
 
 <script>
   const todos = [];
-  let form = document.forms.todo;
-  let todosList = document.getElementById('todo-list');
+  const form = document.forms.todo;
+  const todosList = document.getElementById('todo-list');
   const all = document.getElementById('all');
   const comp = document.getElementById('comp');
   const uncomp = document.getElementById('uncomp');
-  let filters = document.getElementById('filters');
+  const filters = document.getElementById('filters');
+  filters.style.display = 'none';
+  let currentFilter = 'all';
 
+  const allCheck = document.getElementById('allcheck');
+  allCheck.onclick = allCheckHandler;
+
+  function allCheckHandler(e) {
+    const value = e.target.checked;
+    todos.forEach((item) => {
+      item.checked = value;
+    })
+    filterClickHandler({ target: { id: currentFilter } });
+  }
 
   function setTodosCount(count) {
     document.getElementById('counter').innerText = `${count} items left`;
@@ -67,6 +81,7 @@
             createNewLi(item.value, index);
           };
         });
+        currentFilter = 'uncomp';
         return;
       case 'comp':
         clearTodos();
@@ -75,12 +90,14 @@
             createNewLi(item.value, index);
           };
         });
+        currentFilter = 'comp';
         return;
       default:
         clearTodos();
         todos.forEach((item, index) => {
           createNewLi(item.value, index)
         });
+        currentFilter = 'all';
         return;
     }
   };
@@ -89,22 +106,56 @@
   comp.onclick = filterClickHandler;
   uncomp.onclick = filterClickHandler;
 
+  function getOnlyOneLeft() {
+    let counter = 0;
+    todos.forEach((item) => {
+      if (item.checked) counter += 1;
+    });
+
+    return todos.length === counter + 1;
+  };
+
   function setChecked(e) {
+    const value = e.target.checked;
+    if (allCheck.checked) {
+      if (!value) {
+        allCheck.checked = false;
+      }
+    } else {
+      if (value) {
+        const onlyOneLeft = getOnlyOneLeft();
+        if (onlyOneLeft) {
+          allCheck.checked = true;
+        }
+      }
+    }
     const currentId = +e.target.id.slice(1);
-    todos[currentId].checked = e.target.checked;
+    todos[currentId].checked = value;
+    if (['comp', 'uncomp'].includes(currentFilter)) {
+      filterClickHandler({ target: { id: currentFilter } });
+    }
   };
 
   function formAccept(e) {
     e.preventDefault();
 
-    const input = e.target.elements.todoInput
+    if (allCheck.checked) {
+      allCheck.checked = false;
+    };
+
+    const input = e.target.elements.todoInput;
 
     if (input.value.length === 0) return;
 
     todos.push({ value: input.value, checked: false });
-    const nodeNum = todosList.childElementCount;
-    createNewLi(input.value, nodeNum);
-    
+
+    if (filters.style.display === 'none') filters.style.display = 'flex';
+
+    const nodeNum = todos.length - 1;
+    if (currentFilter !== 'comp') {
+      createNewLi(input.value, nodeNum);
+    };
+
     input.value = '';
   };
 

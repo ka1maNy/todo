@@ -6,10 +6,26 @@ body {
   margin-top: 50px;
 }
 
-#todo-input {
-  font-size: 50px;
+#allcheck {
+  width: 30px;
+  height: 30px;
+}
+
+#input-container {
   padding: 10px;
   border: 2px solid gray;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+#todo-input {
+  font-size: 50px;
+  border: none;
+}
+
+#todo-input:focus {
+  outline: none;
 }
 
 #todo-list {
@@ -23,6 +39,15 @@ body {
   list-style-type: none;
   font-size: 50px;
   border-bottom: 1px solid gray;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-left: 10px;
+}
+
+#todo-list>li>input {
+  width: 30px;
+  height: 30px;
 }
 
 #filters {
